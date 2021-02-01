@@ -1,0 +1,40 @@
+### PyCharm ###
+.idea
+
+### Django ###
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
+media
+
+### Nuxt ###
+# gitignore template for Nuxt.js projects
+#
+# Recommended template: Node.gitignore
+
+# Nuxt build
+.nuxt
+
+# Nuxt generate
+dist
+
+### Nuxtjs ###
+# dependencies
+node_modules
+
+# logs
+npm-debug.log
+
+# Nuxt build
+
+# Nuxt generate
+
+
+
+
+
+

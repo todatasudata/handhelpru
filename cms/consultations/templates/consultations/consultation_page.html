@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% load wagtailcore_tags %}
+{% block content %}
+<main class="container mx-auto">
+<div>
+    <h1>Консультация № {{ self.title }}</h1>
+</div>
+    <div>
+        <div style="background-color: darkgray">
+        <div style="background-color: antiquewhite">{{ page.main_client }} </div>
+        <div>{{ page.main_question | richtext }}</div>
+        </div>
+
+        {% for block in page.content %}
+            {% if block.block_type == 'question' %}
+                {% for subblock in block.value %}
+                    {% if subblock.block_type == 'client' %}
+                    <div style="background-color: antiquewhite">{{ subblock.value }}</div>
+                    {% elif subblock.block_type == 'question_text' %}
+                    <div style="background-color: darkgray">{{ subblock.value }}</div>
+                    {% endif %}
+                {% endfor %}
+
+            {% elif block.block_type == 'answer' %}
+                {% for subblock in block.value %}
+                    {% if subblock.block_type == 'author' %}
+                <div style="background-color: cadetblue">{{ subblock.value}}</div>
+                    {% elif subblock.block_type == 'answer_text' %}
+                <div style="background-color: darkolivegreen">{{ subblock.value}}</div>
+                    {% endif %}
+                {% endfor %}
+
+
+        {% endif %}
+        {% endfor %}
+        </div>
+</main>
+{% endblock %}
