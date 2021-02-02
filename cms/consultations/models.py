@@ -30,14 +30,6 @@ class ConsultationPageTag(TaggedItemBase):
     )
 
 
-class ConsultationPage2Tag(TaggedItemBase):
-    content_object = ParentalKey(
-        'ConsultationPage2',
-        related_name='tagged_items',
-        on_delete=models.CASCADE,
-    )
-
-
 class ConsultationPage(Page):
     """Страница консультации"""
 
@@ -83,40 +75,30 @@ class ConsultationPage(Page):
         verbose_name_plural = 'Консультации'
 
 
-class ConsultationPage2(Page):
-    number = models.IntegerField(verbose_name='Номер', blank=True, null=True)
-    tags = ClusterTaggableManager(through=ConsultationPageTag, blank=True, verbose_name='Теги')
-    publish_date = models.DateField(null=True, verbose_name='Дата')
-    client = models.CharField(max_length=100, blank=True, verbose_name='Спрашивает')
-    question = RichTextField(verbose_name='Вопрос')
-    answer = RichTextField(verbose_name='Ответ')
-
-
-    content_panels = Page.content_panels + [
-        FieldPanel('number'),
-        FieldPanel("tags"),
-        FieldPanel('publish_date'),
-        FieldPanel('client'),
-        FieldPanel('question'),
-        FieldPanel('answer')
-    ]
-
-
 class ConsultationsIndexPage(Page):
     """Главная страница консультаций"""
     max_count = 1
-    subpage_types = ['consultations.ConsultationPage', 'consultations.ConsultationPage2',
+    subpage_types = ['consultations.ConsultationPage',
                      'consultations.FAQPage']
-    content = StreamField(
-        [
-            ('special_text', blocks.RichTextBlock()),
-            ('additional_block', blocks.RichTextBlock())
-        ], blank=True
-    )
+    note = RichTextField(blank=True, verbose_name='Примечание')
+    ads = StreamField([
+        ('ad', blocks.RichTextBlock(help_text='Объявление', label='Объявление'))
+    ], blank=True)
+    last_consults_note = RichTextField(blank=True, verbose_name='О режиме публикации')
+
+    api_fields = [
+        APIField("note"),
+        APIField("ads"),
+        APIField("last_consults_note")
+    ]
 
     content_panels = Page.content_panels + [
-        FieldPanel('content')
+        FieldPanel('note', heading='Примечание для «Задать вопрос»'),
+        StreamFieldPanel('ads', heading='Объявления'),
+        FieldPanel('last_consults_note', heading='О режиме публикации')
     ]
+
+
 
     class Meta:
         verbose_name = 'Страница консультаций'
