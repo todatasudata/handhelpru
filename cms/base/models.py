@@ -6,6 +6,7 @@ from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+from wagtail.api import APIField
 
 
 @register_snippet
@@ -28,6 +29,11 @@ class Author(index.Indexed, models.Model):
             ],
             heading="Links"
         )
+    ]
+
+    api_fields = [
+        APIField('name'),
+        APIField('website')
     ]
 
     search_fields = [

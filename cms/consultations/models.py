@@ -64,9 +64,12 @@ class ConsultationPage(Page):
         index.SearchField('content'),
     ]
 
-
     api_fields = [
-        APIField("blog_authors"),
+        APIField('number'),
+        APIField('tags'),
+        APIField('publish_date'),
+        APIField("main_client"),
+        APIField("main_question"),
         APIField("content"),
     ]
 
@@ -97,8 +100,6 @@ class ConsultationsIndexPage(Page):
         StreamFieldPanel('ads', heading='Объявления'),
         FieldPanel('last_consults_note', heading='О режиме публикации')
     ]
-
-
 
     class Meta:
         verbose_name = 'Страница консультаций'
