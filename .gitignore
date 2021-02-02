@@ -11,6 +11,9 @@ db.sqlite3
 db.sqlite3-journal
 media
 
+cms/venv
+cms/media
+
 ### Nuxt ###
 # gitignore template for Nuxt.js projects
 #
@@ -38,3 +41,4 @@ npm-debug.log
 
 
 
+/venv/
