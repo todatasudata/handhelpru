@@ -1,12 +1,10 @@
 from django.db import models
-from django import forms
 
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
 
 from wagtail.core import blocks
-
 from wagtail.core.models import Page
 from wagtail.core.fields import StreamField
 from wagtail.admin.edit_handlers import (
@@ -17,8 +15,12 @@ from wagtail.admin.edit_handlers import (
     RichTextField
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.images.api.fields import ImageRenditionField
+
 from wagtail.search import index
 from wagtail.api import APIField
+
+
 from .blocks import QuestionBlock, AnswerBlock
 
 
@@ -106,17 +108,22 @@ class ConsultationsIndexPage(Page):
         ('ad', blocks.RichTextBlock(help_text='Объявление', label='Объявление'))
     ], blank=True)
     last_consults_note = RichTextField(blank=True, verbose_name='О режиме публикации')
+    image = models.ForeignKey(
+        'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', null=True
+    )
 
     api_fields = [
         APIField("note"),
         APIField("ads"),
-        APIField("last_consults_note")
+        APIField("last_consults_note"),
+        APIField("image", serializer=ImageRenditionField("fill-200x250"))
     ]
 
     content_panels = Page.content_panels + [
         FieldPanel('note', heading='Примечание для «Задать вопрос»'),
         StreamFieldPanel('ads', heading='Объявления'),
-        FieldPanel('last_consults_note', heading='О режиме публикации')
+        FieldPanel('last_consults_note', heading='О режиме публикации'),
+        ImageChooserPanel('image', heading='Иллюстрация')
     ]
 
     class Meta:

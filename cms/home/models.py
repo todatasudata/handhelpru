@@ -29,12 +29,12 @@ class HomePage(Page):
     ], blank=True)
 
     content_panels = Page.content_panels + [
-        ImageChooserPanel('image', heading='Иллюстрация'),
         MultiFieldPanel([
             FieldPanel('text', heading='Текст'),
             FieldPanel('text_sign', heading='Подпись')],
             heading='Описание'),
-        StreamFieldPanel('ads', heading='Объявления')
+        StreamFieldPanel('ads', heading='Объявления'),
+        ImageChooserPanel('image', heading='Иллюстрация')
     ]
 
     api_fields = [
