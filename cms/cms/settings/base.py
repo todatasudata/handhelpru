@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'base',
     'home',
     'blog',
-    'consultations',
+    'cons',
     'guidelines',
     'legislation',
     'library',

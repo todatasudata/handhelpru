@@ -24,21 +24,21 @@ from wagtail.api import APIField
 from .blocks import QuestionBlock, AnswerBlock
 
 
-class ConsultationPageTag(TaggedItemBase):
+class ConsPageTag(TaggedItemBase):
     content_object = ParentalKey(
-        'ConsultationPage',
+        'ConsPage',
         related_name='tagged_items',
         on_delete=models.CASCADE,
     )
 
 
-class ConsultationPage(Page):
+class ConsPage(Page):
     """Страница консультации"""
 
     subpage_types = []
-    parent_page_types = ['consultations.ConsultationsIndexPage']
+    parent_page_types = ['cons.ConsIndexPage']
     number = models.IntegerField(verbose_name='Номер')
-    tags = ClusterTaggableManager(through=ConsultationPageTag, blank=True, verbose_name='Теги')
+    tags = ClusterTaggableManager(through=ConsPageTag, blank=True, verbose_name='Теги')
     publish_date = models.DateField(null=True, verbose_name='Дата')
 
     main_client = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
@@ -79,10 +79,11 @@ class ConsultationPage(Page):
     def save(self, *args, **kwargs):
         # автоматически создаем заголовок и слаг,
         # добавляя к номеру консультации и ее тегов
-        title = str(self.number)
+        title = 'Консультация №' + str(self.number) + ': '
         for tag in self.tags.names():
-            title += '-'
             title += tag
+            title += ', '
+        title = title[:-2]
         self.title = title
 
         slug = str(self.number)
@@ -91,18 +92,18 @@ class ConsultationPage(Page):
             slug += tag
         self.slug = slug
 
-        super(ConsultationPage, self).save()
+        super(ConsPage, self).save()
 
     class Meta:
         verbose_name = 'Консультация'
         verbose_name_plural = 'Консультации'
 
 
-class ConsultationsIndexPage(Page):
+class ConsIndexPage(Page):
     """Главная страница консультаций"""
     max_count = 1
-    subpage_types = ['consultations.ConsultationPage',
-                     'consultations.FAQPage']
+    subpage_types = ['cons.ConsPage',
+                     'cons.FAQPage']
     note = RichTextField(blank=True, verbose_name='Примечание')
     ads = StreamField([
         ('ad', blocks.RichTextBlock(help_text='Объявление', label='Объявление'))
