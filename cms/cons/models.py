@@ -78,7 +78,7 @@ class ConsPage(Page):
 
     def save(self, *args, **kwargs):
         # автоматически создаем заголовок и слаг,
-        # добавляя к номеру консультации и ее тегов
+        # добавляя к номеру консультации и ее теги
         title = 'Консультация №' + str(self.number) + ': '
         for tag in self.tags.names():
             title += tag
@@ -133,6 +133,7 @@ class ConsIndexPage(Page):
 
 class FAQPage(Page):
     max_count = 1
+    suppage_types = []
     content = RichTextField()
     content_panels = Page.content_panels + [
         FieldPanel('content')
