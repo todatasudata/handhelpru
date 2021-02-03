@@ -1,20 +1,17 @@
 from django.db import models
-from django import forms
 
 from taggit.models import TaggedItemBase, Tag as TaggitTag
-
 
 from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import StreamField, RichTextField
 
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel, MultiFieldPanel
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.contrib.table_block.blocks import TableBlock
 
-from modelcluster.fields import ParentalKey, ParentalManyToManyField
-from modelcluster.tags import ClusterTaggableManager
+from modelcluster.fields import ParentalKey
+from modelcluster.contrib.taggit import ClusterTaggableManager
 
 from base import blocks
 
@@ -74,10 +71,9 @@ class BlogArticlePage(Page):
     publish_date = models.DateField(blank=True, null=True)
     content = StreamField(
         [
-        ('full_richtext', blocks.RichtextBlock()),
-        ('table', TableBlock()),
-        ]
-        , null=True, blank=True, help_text='Содержание')
+            ('full_richtext', blocks.RichtextBlock()),
+            ('table', TableBlock()),
+        ], null=True, blank=True, help_text='Содержание')
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(

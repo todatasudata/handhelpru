@@ -19,7 +19,7 @@ from wagtail.admin.edit_handlers import (
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.search import index
 from wagtail.api import APIField
-from consultations.blocks import QuestionBlock, AnswerBlock
+from .blocks import QuestionBlock, AnswerBlock
 
 
 class ConsultationPageTag(TaggedItemBase):
@@ -58,6 +58,7 @@ class ConsultationPage(Page):
     ]
 
     search_fields = Page.search_fields + [
+        index.SearchField('number'),
         index.SearchField('tags'),
         index.SearchField('main_client'),
         index.SearchField('main_question'),
@@ -72,6 +73,23 @@ class ConsultationPage(Page):
         APIField("main_question"),
         APIField("content"),
     ]
+
+    def save(self, *args, **kwargs):
+        # автоматически создаем заголовок и слаг,
+        # добавляя к номеру консультации и ее тегов
+        title = str(self.number)
+        for tag in self.tags.names():
+            title += '-'
+            title += tag
+        self.title = title
+
+        slug = str(self.number)
+        for tag in self.tags.slugs():
+            slug += '-'
+            slug += tag
+        self.slug = slug
+
+        super(ConsultationPage, self).save()
 
     class Meta:
         verbose_name = 'Консультация'
