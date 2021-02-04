@@ -47,3 +47,4 @@ class HomePage(Page):
 
     class Meta:
         verbose_name = 'Главная страница'
+

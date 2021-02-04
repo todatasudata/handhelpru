@@ -9,11 +9,11 @@ __pycache__/
 local_settings.py
 db.sqlite3
 db.sqlite3-journal
-media
+#media
 rename_app.py
 consultations/management*
 cms/venv
-cms/media
+#cms/media
 
 ### Nuxt ###
 # gitignore template for Nuxt.js projects
