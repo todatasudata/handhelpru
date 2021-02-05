@@ -16,5 +16,3 @@ class RichTextBlock(blocks.RichTextBlock):
     class Meta:
         icon = 'doc-full'
         label = 'Текст'
-
-

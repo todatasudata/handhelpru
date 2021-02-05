@@ -41,8 +41,7 @@ class HomePage(Page):
         APIField("text"),
         APIField("text_sign"),
         APIField("ads"),
-        APIField("image", serializer=ImageRenditionField('fill-200x250')),
-        APIField("image_small", serializer=ImageRenditionField('fill-50x50', source='image'))
+        APIField("image", serializer=ImageRenditionField('fill-398x318'))
     ]
 
     class Meta:
