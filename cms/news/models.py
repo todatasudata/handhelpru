@@ -1,24 +1,32 @@
-from django.db import models
-
 from wagtail.core.models import Page
-from wagtail.core.fields import RichTextField
+from wagtail.core.fields import StreamField
+from wagtail.admin.edit_handlers import StreamFieldPanel
+from wagtail.api import APIField
 
-
-class NewsIndexPage(Page):
-    max_count = 1
-    subpage_types = ['news.NewsPage']
-
-    class Meta:
-        verbose_name = 'Страница всех новостей'
-        verbose_name_plural = 'Страницы всех новостей'
+from base.blocks import NewsBlock
 
 
 class NewsPage(Page):
-    parental_page_types = ['news.NewsIndexPage']
+    """
+    Страница «Новости сайта»
+    """
+    parental_page_types = ['home.HomePage']
     subpage_types = []
-    date = models.DateField()
-    content = RichTextField()
+
+    content = StreamField([
+        ('news_item', NewsBlock())
+        ], null=True, blank=True
+    )
+
+    content_panels = Page.content_panels + [
+        StreamFieldPanel('content'),
+    ]
+
+    api_fields = [
+        APIField('content')
+    ]
 
     class Meta:
-        verbose_name = 'Страница Новости'
-        verbose_name_plural = 'Страницы новостей'
+        verbose_name = 'Страница новостей'
+
+

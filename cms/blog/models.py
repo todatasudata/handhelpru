@@ -9,11 +9,12 @@ from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPane
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.contrib.table_block.blocks import TableBlock
+from wagtail.core import blocks
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 
-from base import blocks
+from base import blocks as base_blocks
 
 
 class BlogAuthorsOrderable(Orderable):
@@ -71,7 +72,7 @@ class BlogArticlePage(Page):
     publish_date = models.DateField(blank=True, null=True)
     content = StreamField(
         [
-            ('full_richtext', blocks.RichtextBlock()),
+            ('full_richtext', base_blocks.RichTextBlock()),
             ('table', TableBlock()),
         ], null=True, blank=True, help_text='Содержание')
 

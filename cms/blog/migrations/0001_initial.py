@@ -35,7 +35,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('publish_date', models.DateField(blank=True, null=True)),
-                ('content', wagtail.core.fields.StreamField([('full_richtext', base.blocks.RichtextBlock()), ('table', wagtail.contrib.table_block.blocks.TableBlock())], blank=True, help_text='Содержание', null=True)),
+                ('content', wagtail.core.fields.StreamField([('full_richtext', base.blocks.RichTextBlock()), ('table', wagtail.contrib.table_block.blocks.TableBlock())], blank=True, help_text='Содержание', null=True)),
             ],
             options={
                 'verbose_name': 'Запись в блоге',
