@@ -44,5 +44,8 @@ class HomePage(Page):
         APIField("image", serializer=ImageRenditionField('fill-398x318'))
     ]
 
+    def get_admin_display_title(self):
+        return 'Главная'
+
     class Meta:
         verbose_name = 'Главная страница'
