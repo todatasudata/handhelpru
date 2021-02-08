@@ -40,7 +40,7 @@ class Author(index.Indexed, models.Model):
     ]
 
     def __str__(self):
-        return self.name
+        return self.name + '121'
 
     class Meta:  # noqa
         verbose_name = "Автор"
