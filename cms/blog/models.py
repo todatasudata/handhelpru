@@ -13,6 +13,8 @@ from wagtail.api import APIField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.api.fields import ImageRenditionField
 
+from rest_framework.fields import Field
+
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 
@@ -49,7 +51,7 @@ class BlogAuthorsOrderable(Orderable):
 
     api_fields = [
         APIField('author_name'),
-        APIField('author_website')
+        APIField('author_website'),
     ]
 
 
@@ -81,10 +83,11 @@ class BlogIndexPage(Page):
         'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', null=True
     )
 
+
     api_fields = [
         APIField('subtitle'),
         APIField('description'),
-        APIField('image', serializer=ImageRenditionField('fill-400x595'))
+        APIField('image', serializer=ImageRenditionField('fill-400x595')),
     ]
 
     content_panels = Page.content_panels + [

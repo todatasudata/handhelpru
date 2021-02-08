@@ -5,12 +5,15 @@ from modelcluster.fields import ParentalKey
 from taggit.models import TaggedItemBase
 
 from wagtail.core import blocks
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import StreamField
 from wagtail.admin.edit_handlers import (
     FieldPanel,
     StreamFieldPanel,
-    RichTextField
+    RichTextField,
+    PageChooserPanel,
+    MultiFieldPanel,
+    InlinePanel
 )
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.api.fields import ImageRenditionField
@@ -20,6 +23,33 @@ from wagtail.api import APIField
 
 
 from .blocks import QuestionBlock, AnswerBlock
+
+
+class PreviousConsOrderable(Orderable):
+    page = ParentalKey("cons.ConsPage", related_name='previous_cons')
+    previous_consultation = models.ForeignKey(
+        "wagtailcore.Page",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    panels = [
+        PageChooserPanel('previous_consultation')
+    ]
+
+    @property
+    def prev_cons_url(self):
+        return self.previous_consultation.url
+
+    @property
+    def prev_cons_number(self):
+        return self.previous_consultation.specific.number
+
+    api_fields = [
+        APIField('prev_cons_url'),
+        APIField('prev_cons_number'),
+    ]
 
 
 class ConsPageTag(TaggedItemBase):
@@ -38,6 +68,7 @@ class ConsPage(Page):
     number = models.IntegerField(verbose_name='Номер')
     tags = ClusterTaggableManager(through=ConsPageTag, blank=True, verbose_name='Теги')
     publish_date = models.DateField(null=True, verbose_name='Дата')
+    too_old = models.BooleanField(default=False, null=False, verbose_name='Устарела')  # если конса неактаульная, ставим true
 
     main_client = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
     main_question = RichTextField(blank=True, verbose_name='Основной вопрос')
@@ -55,7 +86,11 @@ class ConsPage(Page):
         FieldPanel('main_client'),
         FieldPanel('main_question'),
         StreamFieldPanel("content"),
-    ]
+        FieldPanel('too_old'),
+        MultiFieldPanel(
+            [InlinePanel("previous_cons", label='Консультация')
+            ], heading='Предыдущие консультации')
+        ]
 
     search_fields = Page.search_fields + [
         index.SearchField('number'),
@@ -72,6 +107,8 @@ class ConsPage(Page):
         APIField("main_client"),
         APIField("main_question"),
         APIField("content"),
+        APIField('previous_cons'),
+        APIField('too_old')
     ]
 
     def save(self, *args, **kwargs):

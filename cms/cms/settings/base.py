@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.postgres_search',
     'wagtail.contrib.table_block',
     'wagtail.embeds',
+    'wagtail.locales',
     'wagtail.sites',
     'wagtail.users',
     'wagtail.snippets',
@@ -138,11 +139,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'ru-ru'
+LANGUAGE_CODE = 'ru-RU'
 
 TIME_ZONE = 'UTC'
 
 USE_I18N = True
+WAGTAIL_I18N_ENABLED = True
 
 USE_L10N = True
 
@@ -180,6 +182,12 @@ WAGTAIL_SITE_NAME = "cms"
 # Base URL to use when referring to full URLs within the Wagtail admin backend -
 # e.g. in notification emails. Don't include '/admin' or a trailing slash
 BASE_URL = 'http://example.com'
+
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
+    ('ru', "Russian"),
+    ('en', 'English'),
+]
+
 
 WAGTAIL_ALLOW_UNICODE_SLUGS = False
 
