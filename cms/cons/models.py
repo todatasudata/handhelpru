@@ -23,6 +23,7 @@ from wagtail.api import APIField
 
 
 from .blocks import QuestionBlock, AnswerBlock
+from base import serializers
 
 
 class PreviousConsOrderable(Orderable):
@@ -72,6 +73,7 @@ class ConsPage(Page):
 
     main_client = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
     main_question = RichTextField(blank=True, verbose_name='Основной вопрос')
+    authors = 'завпунктом'  ## TODO забирать данные ответитивших консультантов из стримфилда
 
     content = StreamField(
         [
@@ -94,21 +96,24 @@ class ConsPage(Page):
 
     search_fields = Page.search_fields + [
         index.SearchField('number'),
+        index.FilterField('number'),
         index.SearchField('tags'),
         index.SearchField('main_client'),
         index.SearchField('main_question'),
         index.SearchField('content'),
+        index.FilterField('tags'),
     ]
 
     api_fields = [
         APIField('number'),
-        APIField('tags'),
-        APIField('publish_date'),
+        APIField('tags', serializer=serializers.TagSerializer()),
+        APIField('publish_date', serializer=serializers.DateSerializer()),
+        APIField('authors'),
         APIField("main_client"),
         APIField("main_question"),
         APIField("content"),
         APIField('previous_cons'),
-        APIField('too_old')
+        APIField('too_old'),
     ]
 
     def save(self, *args, **kwargs):
