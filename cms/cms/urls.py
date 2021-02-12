@@ -10,18 +10,21 @@ from .api import api_router
 
 from search import views as search_views
 
+from rest_framework import routers
+from cons.views import ConsPageViewSet
+
+drf_router = routers.DefaultRouter()
+drf_router.register(r'conspages', ConsPageViewSet)
+
+
 urlpatterns = [
     path('django-admin/', admin.site.urls),
-
     path('admin/', include(wagtailadmin_urls)),
     path('documents/', include(wagtaildocs_urls)),
-
     path('search/', search_views.search, name='search'),
     path(r'api/v2/', api_router.urls),
-    # ...
+    path('api/v3/', include(drf_router.urls)),  # DRF API для поиска по тегам
     re_path(r'^', include(wagtail_urls)),
-
-
 ]
 
 
