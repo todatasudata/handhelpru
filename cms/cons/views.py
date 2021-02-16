@@ -61,7 +61,7 @@ class CustomSearchFilter(filters.SearchFilter):
 class ConsPageViewSet(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend, CustomSearchFilter, )
     use_m2m_optimization = False
-    search_fields = ('=tags__name', )
+    search_fields = ('$tags__name', )
     queryset = ConsPage.objects.all()
     serializer_class = ConsPageSerializer
 

@@ -97,7 +97,6 @@ class ConsPage(Page):
     search_fields = Page.search_fields + [
         index.SearchField('number'),
         index.FilterField('number'),
-        index.SearchField('tags'),
         index.SearchField('main_client'),
         index.SearchField('main_question'),
         index.SearchField('content'),
