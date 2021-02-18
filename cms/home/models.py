@@ -41,7 +41,7 @@ class HomePage(Page):
         APIField("text"),
         APIField("text_sign"),
         APIField("ads"),
-        APIField("image", serializer=ImageRenditionField('fill-398x318'))
+        APIField("image", serializer=ImageRenditionField('fill-483x365'))
     ]
 
     def get_admin_display_title(self):

@@ -35,7 +35,7 @@ class Author(index.Indexed, models.Model):
 
     @property
     def ava(self):  # маленькая аватарка
-        return self.image.get_rendition('fill-20x20')
+        return self.image.get_rendition('fill-24x24')
 
     panels = [
         MultiFieldPanel([

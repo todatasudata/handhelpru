@@ -171,7 +171,7 @@ class ConsIndexPage(Page):
         APIField("note"),
         APIField("ads"),
         APIField("last_consults_note"),
-        APIField("image", serializer=ImageRenditionField("fill-200x250"))  # TODO выставить по макету
+        APIField("image", serializer=ImageRenditionField("fill-483x365")) 
     ]
 
     content_panels = Page.content_panels + [
