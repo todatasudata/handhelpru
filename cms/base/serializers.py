@@ -6,7 +6,6 @@ class TagSerializer(Field):
     """
     Сериалайзер тегов
     """
-
     def to_representation(self, value):
         return [
             {
@@ -24,3 +23,26 @@ class DateSerializer(Field):
     def to_representation(self, value):
         date_str = value.strftime('%d.%m.%Y')
         return date_str
+
+
+class AuthorSerializer(Field):
+    """
+    Сериалайзер авторов
+    """
+    def to_representation(self, value):
+        return [
+            {
+                'full_name': author.full_name,
+                'short_name': author.short_name,
+                'alias': author.alias,
+                'page_url': author.page_url,
+                'profession': author.profession,
+                'ava': {
+                    'url': author.ava.url,
+                    'width': author.ava.width,
+                    'height': author.ava.height,
+                    'alt': author.ava.alt,
+                }
+                
+            } for author in value.all()
+        ]

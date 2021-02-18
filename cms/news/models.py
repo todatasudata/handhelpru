@@ -23,7 +23,7 @@ class NewsPage(Page):
     ]
 
     api_fields = [
-        APIField('content')
+        APIField('content'),
     ]
 
     class Meta:

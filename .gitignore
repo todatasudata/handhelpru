@@ -1,5 +1,6 @@
-### PyCharm ###
+### IDE ###
 .idea
+.vscode
 
 ### Django ###
 *.log
@@ -43,3 +44,4 @@ npm-debug.log
 
 
 /venv/
+.vscode/settings.json

@@ -3,11 +3,6 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from rest_framework import serializers
 
 
-class AuthorBlockSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        pass
-
-
 class ClientBlock(blocks.CharBlock):
     class Meta:
         label = 'Спрашивает'
@@ -30,11 +25,20 @@ class AuthorBlock(SnippetChooserBlock):
     def __init__(self):
         super().__init__(target_model='base.Author', help_text='Кто отвечает?')
 
+        
     def get_api_representation(self, value, context=None):
         return {
-                'author_name': value.name,
-                'author_website': value.website
+                'full_name': value.full_name,
+                'short_name': value.short_name,
+                'alias': value.alias,
+                'page_url': value.page_url,
+                'ava': {
+                    'url': value.ava.url,
+                    'width': value.ava.width,
+                    'height': value.ava.height,
+                    'alt': value.ava.alt,
                 }
+        }
 
     class Meta:
         label = 'Отвечает'

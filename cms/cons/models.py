@@ -24,6 +24,7 @@ from wagtail.api import APIField
 
 from .blocks import QuestionBlock, AnswerBlock
 from base import serializers
+from base.models import Author
 
 
 class PreviousConsOrderable(Orderable):
@@ -66,14 +67,19 @@ class ConsPage(Page):
 
     subpage_types = []
     parent_page_types = ['cons.ConsIndexPage']
+
+    # TODO добавить значение по умолчанию
     number = models.IntegerField(verbose_name='Номер')
+    
     tags = ClusterTaggableManager(through=ConsPageTag, blank=True, verbose_name='Теги')
     publish_date = models.DateField(null=True, verbose_name='Дата')
     too_old = models.BooleanField(default=False, null=False, verbose_name='Устарела')  # если конса неактаульная, ставим true
 
-    main_client = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
-    main_question = RichTextField(blank=True, verbose_name='Основной вопрос')
-    authors = 'завпунктом'  ## TODO забирать данные ответитивших консультантов из стримфилда
+    # TODO создавать эти поля автоматически
+    client_preview = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
+    question_preview = RichTextField(blank=True, verbose_name='Основной вопрос')
+
+    authors = models.ManyToManyField(Author)
 
     content = StreamField(
         [
@@ -85,8 +91,8 @@ class ConsPage(Page):
         FieldPanel("number"),
         FieldPanel("tags"),
         FieldPanel('publish_date'),
-        FieldPanel('main_client'),
-        FieldPanel('main_question'),
+        FieldPanel('client_preview'),
+        FieldPanel('question_preview'),
         StreamFieldPanel("content"),
         FieldPanel('too_old'),
         MultiFieldPanel(
@@ -97,8 +103,8 @@ class ConsPage(Page):
     search_fields = Page.search_fields + [
         index.SearchField('number'),
         index.FilterField('number'),
-        index.SearchField('main_client'),
-        index.SearchField('main_question'),
+        index.SearchField('client_preview'),
+        index.SearchField('question_preview'),
         index.SearchField('content'),
         index.FilterField('tags'),
     ]
@@ -108,11 +114,12 @@ class ConsPage(Page):
         APIField('tags', serializer=serializers.TagSerializer()),
         APIField('publish_date', serializer=serializers.DateSerializer()),
         APIField('authors'),
-        APIField("main_client"),
-        APIField("main_question"),
+        APIField("client_preview"),
+        APIField("question_preview"),
         APIField("content"),
         APIField('previous_cons'),
         APIField('too_old'),
+        APIField('authors', serializer=serializers.AuthorSerializer())
     ]
 
     def save(self, *args, **kwargs):
@@ -130,6 +137,14 @@ class ConsPage(Page):
             slug += '-'
             slug += tag
         self.slug = slug
+
+        ## создаем для авторов консультации отдельные записи в бд
+        for block in self.content:
+            if block.block_type == 'answer':
+                for sub_block in block.value:
+                    if sub_block.block_type == 'author':
+                        a = Author.objects.get(id=sub_block.value.id)
+                        self.authors.add(a)
 
         super(ConsPage, self).save()
 
@@ -156,7 +171,7 @@ class ConsIndexPage(Page):
         APIField("note"),
         APIField("ads"),
         APIField("last_consults_note"),
-        APIField("image", serializer=ImageRenditionField("fill-200x250"))
+        APIField("image", serializer=ImageRenditionField("fill-200x250"))  # TODO выставить по макету
     ]
 
     content_panels = Page.content_panels + [
