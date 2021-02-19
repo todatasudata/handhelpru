@@ -1,7 +1,7 @@
 from django.db import models
 
 from modelcluster.contrib.taggit import ClusterTaggableManager
-from modelcluster.fields import ParentalKey
+from modelcluster.fields import ParentalKey, ParentalManyToManyField
 from taggit.models import TaggedItemBase
 
 from wagtail.core import blocks
@@ -69,7 +69,7 @@ class ConsPage(Page):
     parent_page_types = ['cons.ConsIndexPage']
 
     # TODO добавить значение по умолчанию
-    number = models.IntegerField(verbose_name='Номер')
+    number = models.PositiveIntegerField(verbose_name='Номер')
     
     tags = ClusterTaggableManager(through=ConsPageTag, blank=True, verbose_name='Теги')
     publish_date = models.DateField(null=True, verbose_name='Дата')
@@ -79,7 +79,7 @@ class ConsPage(Page):
     client_preview = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
     question_preview = RichTextField(blank=True, verbose_name='Основной вопрос')
 
-    authors = models.ManyToManyField(Author)
+    authors = ParentalManyToManyField(Author, blank=True)
 
     content = StreamField(
         [
@@ -87,7 +87,7 @@ class ConsPage(Page):
             ('answer', AnswerBlock()),
         ], blank=True, verbose_name='Содержание')
 
-    content_panels = Page.content_panels + [
+    content_panels = [
         FieldPanel("number"),
         FieldPanel("tags"),
         FieldPanel('publish_date'),
@@ -122,35 +122,61 @@ class ConsPage(Page):
         APIField('authors', serializer=serializers.AuthorSerializer())
     ]
 
-    def save(self, *args, **kwargs):
-        # автоматически создаем заголовок и слаг,
-        # добавляя к номеру консультации и ее теги
+    def clean(self):
+        super().clean()
         title = 'Консультация №' + str(self.number) + ': '
+        print(title)
         for tag in self.tags.names():
             title += tag
             title += ', '
         title = title[:-2]
         self.title = title
-
         slug = str(self.number)
         for tag in self.tags.slugs():
             slug += '-'
             slug += tag
         self.slug = slug
 
-        ## создаем для авторов консультации отдельные записи в бд
+        # создаем для авторов консультации отдельные записи в бд
         for block in self.content:
             if block.block_type == 'answer':
                 for sub_block in block.value:
                     if sub_block.block_type == 'author':
                         a = Author.objects.get(id=sub_block.value.id)
                         self.authors.add(a)
+        # self.slug = text.slugify(self.title)
 
-        super(ConsPage, self).save()
+
+
+
+    def save(self, *args, **kwargs):
+        # автоматически создаем заголовок и слаг,
+        # добавляя к номеру консультации и ее теги
+        pass
+        # print(self)
+        # title = 'Консультация №' + str(self.number) + ': '
+        # print(title)
+        # for tag in self.tags.names():
+        #     title += tag
+        #     title += ', '
+        # title = title[:-2]
+        # self.title = title
+
+        # slug = str(self.number)
+        # for tag in self.tags.slugs():
+        #     slug += '-'
+        #     slug += tag
+        # self.slug = slug
+
+
+
+        return super().save(*args, **kwargs)
 
     class Meta:
         verbose_name = 'Консультация'
         verbose_name_plural = 'Консультации'
+
+ConsPage._meta.get_field('slug').default = 'default-blank-slug'
 
 
 class ConsIndexPage(Page):
