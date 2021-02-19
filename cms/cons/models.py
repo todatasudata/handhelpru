@@ -62,6 +62,13 @@ class ConsPageTag(TaggedItemBase):
     )
 
 
+class FAQPageTag(TaggedItemBase):
+    content_object = ParentalKey(
+        'FAQPage',
+        related_name='tagged_items',
+        on_delete=models.CASCADE,  # TODO проверить, что CASCADE подходит
+    )
+
 class ConsPage(Page):
     """Страница консультации"""
 
@@ -72,8 +79,11 @@ class ConsPage(Page):
     number = models.PositiveIntegerField(verbose_name='Номер')
     
     tags = ClusterTaggableManager(through=ConsPageTag, blank=True, verbose_name='Теги')
+
+    # TODO добавить значение по умолчанию
     publish_date = models.DateField(null=True, verbose_name='Дата')
-    too_old = models.BooleanField(default=False, null=False, verbose_name='Устарела')  # если конса неактаульная, ставим true
+
+    too_old = models.BooleanField(default=False, null=False, verbose_name='Устарела')  # если конса неактаульная, ставим галочку
 
     # TODO создавать эти поля автоматически
     client_preview = models.CharField(max_length=100, blank=True, verbose_name='Основной клиент')
@@ -125,7 +135,6 @@ class ConsPage(Page):
     def clean(self):
         super().clean()
         title = 'Консультация №' + str(self.number) + ': '
-        print(title)
         for tag in self.tags.names():
             title += tag
             title += ', '
@@ -144,10 +153,6 @@ class ConsPage(Page):
                     if sub_block.block_type == 'author':
                         a = Author.objects.get(id=sub_block.value.id)
                         self.authors.add(a)
-        # self.slug = text.slugify(self.title)
-
-
-
 
     def save(self, *args, **kwargs):
         # автоматически создаем заголовок и слаг,
@@ -167,9 +172,6 @@ class ConsPage(Page):
         #     slug += '-'
         #     slug += tag
         # self.slug = slug
-
-
-
         return super().save(*args, **kwargs)
 
     class Meta:
@@ -182,8 +184,7 @@ ConsPage._meta.get_field('slug').default = 'default-blank-slug'
 class ConsIndexPage(Page):
     """Главная страница консультаций"""
     max_count = 1
-    subpage_types = ['cons.ConsPage',
-                     'cons.FAQPage']
+    subpage_types = ['cons.ConsPage', 'cons.FAQIndexPage', 'cons.AskPage']
     note = RichTextField(blank=True, verbose_name='Примечание')
     ads = StreamField([
         ('ad', blocks.RichTextBlock(help_text='Объявление', label='Объявление'))
@@ -211,13 +212,67 @@ class ConsIndexPage(Page):
         verbose_name = 'Страница консультаций'
 
 
-class FAQPage(Page):
+class FAQIndexPage(Page):
     max_count = 1
-    suppage_types = []
+    subpage_types = ['FAQPage',]
+    # content = RichTextField()
+    # content_panels = Page.content_panels + [
+    #     FieldPanel('content')
+    # ]
+
+    class Meta:
+        verbose_name = 'Частые вопросы Главная'
+
+
+class FAQPage(Page):
+    parental_page_types = ['FAQIndexPage',]
+    subpage_types = []
+    number = models.PositiveIntegerField(verbose_name='Номер')
+    tags = ClusterTaggableManager(through=FAQPageTag, blank=True, verbose_name='Теги')
     content = RichTextField()
+
+    content_panels = Page.content_panels + [
+        FieldPanel('number'),
+        FieldPanel('tags'),
+        FieldPanel('content'),
+    ]
+
+    search_fields = Page.search_fields + [
+        index.SearchField('content'),
+        index.FilterField('tags'),
+    ]
+
+    api_fields = [
+    APIField('number'),
+    APIField('tags', serializer=serializers.TagSerializer()),
+    APIField('content')
+    ]
+    
+    def clean(self):
+        super().clean()
+        slug = str(self.number)
+        for tag in self.tags.slugs():
+            slug += '-'
+            slug += tag
+        self.slug = slug
+
+
+    class Meta:
+        verbose_name = 'Частый вопрос'
+
+
+class AskPage(Page):
+    max_count = 1
+    parental_page_type = ['ConsIndexPage', ]
+    content = RichTextField()
+    
     content_panels = Page.content_panels + [
         FieldPanel('content')
     ]
 
+    api_fields = [
+        APIField('content'),
+    ]
+
     class Meta:
-        verbose_name = 'Частые вопросы'
+        verbose_name = 'Задать вопрос'
