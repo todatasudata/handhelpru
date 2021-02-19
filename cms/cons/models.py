@@ -110,13 +110,23 @@ class ConsPage(Page):
             ], heading='Предыдущие консультации')
         ]
 
+    @property
+    def tag_slugs(self):
+        return '\n'.join(self.tags.all().values_list('slug', flat=True))
+
+
     search_fields = Page.search_fields + [
         index.SearchField('number'),
         index.FilterField('number'),
         index.SearchField('client_preview'),
         index.SearchField('question_preview'),
         index.SearchField('content'),
-        index.FilterField('tags'),
+        index.SearchField('tag_slugs'),
+        index.RelatedFields('tags', [
+            index.SearchField('slug'),
+            index.FilterField('slug'),
+        ]),
+        
     ]
 
     api_fields = [
@@ -237,9 +247,14 @@ class FAQPage(Page):
         FieldPanel('content'),
     ]
 
+    @property 
+    def tag_slugs(self):
+        return '\n'.join(self.tags.all().values_list('slug', flat=True))
+
     search_fields = Page.search_fields + [
         index.SearchField('content'),
         index.FilterField('tags'),
+        index.SearchField('tag_slugs'),
     ]
 
     api_fields = [
