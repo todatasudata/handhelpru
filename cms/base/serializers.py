@@ -35,7 +35,7 @@ class AuthorSerializer(Field):
                 'full_name': author.full_name,
                 'short_name': author.short_name,
                 'alias': author.alias,
-                'page_url': author.page_url,
+                'link': author.link,
                 'profession': author.profession,
                 'ava': {
                     'url': author.ava.url,

@@ -2,12 +2,13 @@ from django.db import models
 
 from wagtail.core.models import Page
 from wagtail.core.fields import RichTextField
-from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, MultiFieldPanel, PageChooserPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 from wagtail.api import APIField
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.images.api.fields import ImageRenditionField
+from taggit.models import TaggedItemBase, Tag as TaggitTag
 
 
 @register_snippet
@@ -21,7 +22,10 @@ class Author(index.Indexed, models.Model):
     profession = models.CharField(max_length=200, verbose_name='Профессия/Звание/...', null=True, blank=True)
 
     # TODO добавить выбор страницы сайта
-    page_url = models.URLField(blank=True, null=True, default='hand-help.ru', verbose_name='Страница')
+    
+    handhelp_url = models.ForeignKey('wagtailcore.Page', null=True, blank=True, related_name='+', on_delete=models.CASCADE,
+    verbose_name='Страница на hand-help')
+    outer_url = models.URLField(blank=True, null=True, default='hand-help.ru', verbose_name='Страница на стороннем сайте')
     image = models.ForeignKey(
         'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', null=True, verbose_name='Изображение'
     )
@@ -32,6 +36,14 @@ class Author(index.Indexed, models.Model):
     @property
     def short_name(self):  ## Фамилия И.О.
         return f'{self.surname} {self.name[0]}.{self.middle_name[0]}.'
+
+    @property
+    def link(self):
+        if self.page_url:
+            return self.handhelp_url
+        elif self.website_url:
+            return self.outer_url
+        return '#'
 
     @property
     def ava(self):  # маленькая аватарка
@@ -45,7 +57,10 @@ class Author(index.Indexed, models.Model):
         ], heading='ФИО'),
         FieldPanel('alias'),
         FieldPanel('profession'),
-        FieldPanel('page_url'),
+        MultiFieldPanel([
+            PageChooserPanel('handhelp_url'),
+            FieldPanel('outer_url')
+        ], heading='Страница'),
         ImageChooserPanel('image'),
     ]
 
@@ -77,3 +92,14 @@ class SimplePage(Page):
     class Meta:
         verbose_name = 'Обычная страница'
         verbose_name_plural = 'Обычные страницы'
+
+
+
+
+@register_snippet
+class Tag(TaggitTag):
+    class Meta:
+        proxy = True
+        verbose_name = 'Тег'
+        verbose_name_plural = 'Теги'
+        ordering = ['name']

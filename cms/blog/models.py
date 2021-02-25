@@ -135,7 +135,7 @@ class BlogArticlePage(Page):
         APIField('content'),
         APIField('tags', serializer=serializers.TagSerializer()),
         APIField('blog_authors'),
-        APIField('publish_date')
+        APIField('publish_date', serializer=serializers.DateSerializer())
     ]
 
     class Meta:
@@ -147,9 +147,4 @@ class BlogPageTag(TaggedItemBase):
     content_object = ParentalKey('BlogArticlePage', related_name='article_tags')
 
 
-@register_snippet
-class Tag(TaggitTag):
-    class Meta:
-        proxy = True
-        verbose_name = 'Тег'
-        verbose_name_plural = 'Теги'
+

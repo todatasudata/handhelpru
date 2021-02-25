@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'wagtail.contrib.postgres_search',
     'wagtail.contrib.table_block',
+    'wagtail_headless_preview',
     'wagtail.embeds',
     'wagtail.locales',
     'wagtail.sites',
@@ -195,4 +196,8 @@ WAGTAILSEARCH_BACKENDS = {
     'default': {
         'BACKEND': 'wagtail.contrib.postgres_search.backend',
     },
+}
+
+HEADLESS_PREVIEW_CLIENT_URLS = {
+    'default': 'http://localhost:3000/',
 }

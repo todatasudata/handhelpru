@@ -31,7 +31,7 @@ class AuthorBlock(SnippetChooserBlock):
                 'full_name': value.full_name,
                 'short_name': value.short_name,
                 'alias': value.alias,
-                'page_url': value.page_url,
+                'link': value.link,
                 'ava': {
                     'url': value.ava.url,
                     'width': value.ava.width,

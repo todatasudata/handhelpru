@@ -60,6 +60,8 @@ class ConsPageTag(TaggedItemBase):
         related_name='tagged_items',
         on_delete=models.CASCADE,
     )
+    # class Meta:
+    #     ordering = ['name']
 
 
 class FAQPageTag(TaggedItemBase):
