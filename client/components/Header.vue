@@ -1,31 +1,31 @@
 <template>
-  <div class="pt-4">
-    <div class="shadow-md sm:shadow-sm w-full header p-3">
-      <div class="sm:container sm:mx-auto grid grid-cols-12 gap-5 items-center">
-      <div class="col-span-2 sm:col-span-3"><NuxtLink to="/">
+  <div class="">
+    <div class="shadow-md sm:shadow-sm w-full header p-3" v-bind:class="[topScroll ? 'fixed' : 'absolute']">
+      <div class="sm:container sm:mx-auto grid grid-cols-12 gap-3 sm:gap-5 items-center">
+      <div class="col-span-2 sm:col-span-4"><NuxtLink to="/">
         <img src="/image/logo.svg" alt=""></NuxtLink></div>
-      <div class="col-span-8 text-xs sm:text-xl sm:col-span-6 sm:text-center">Правовые консультации по делам связанным с наркотиками</div>
-      <div class="col-span-2 sm:col-span-3 text-right">
+      <div class="col-span-8	title sm:col-span-4 sm:text-center">Правовые консультации по делам связанным с наркотиками</div>
+      <div class="col-span-2 sm:col-span-4 text-right">
         <IconifyIcon class="sm:hidden text-4xl " @click="nav = true" :icon="icons.menuIcon" />
-        <NuxtLink to="/search"><IconifyIcon class="hidden sm:inline text-3xl mr-3" @click="nav = true" :icon="icons.searchOutlined" /></NuxtLink>
+        <NuxtLink to="/search"><IconifyIcon class="hidden sm:inline text-3xl mr-5" @click="nav = true" :icon="icons.searchOutlined" /></NuxtLink>
         <NuxtLink to="/" class="btn-accent hidden sm:inline">Поддержать</NuxtLink>
       </div>
-      <nav class="mobile-nav p-10" v-show="nav">
+      <nav class="mobile-nav py-5 px-10 overflow-y-auto" v-show="nav">
         <div class="flex justify-between align-center">
           <FormSearch class="w-10/12	"></FormSearch>
             <IconifyIcon @click="nav = false" class="sm:hidden text-4xl " :icon="icons.closeOutline" />
         </div>
         <ul class="menu nav py-3">
-          <li class="font-medium font-secondary py-1" v-for="item in menu">
-            <span  v-if="!item.childs" @click="nav = false">
+          <li class="py-2" v-for="item in menu">
+            <span  v-if="!item.childs" @click="nav = false" class="font-medium font-secondary ">
               <NuxtLink :to="item.slug" class="text-lg">{{ item.name }}</NuxtLink>
             </span>
-            <span v-else @click=""  class="text-lg font-medium mr-2 lg:mr-10 cursor-pointer">
+            <span v-else @click="(childOpen === item.index)?childOpen ='': childOpen = item.index"  class="text-lg font-medium font-secondary mr-2 lg:mr-10 cursor-pointer">
             {{item.name}}
-            <IconifyIcon style="display: inline" v-bind:class="{'open': openChild === item.index}" :icon="icons.arrowDown"  />
+            <IconifyIcon style="display: inline" v-bind:class="{'open': childOpen === item.index}" :icon="icons.arrowDown"  />
           </span>
-            <ul v-if="item.childs && item.index === openChild" class="pl-5 py-4">
-              <li v-for="child in item.childs" ><NuxtLink class="text-lg block py-3" :to="child.slug" >{{child.name}}</NuxtLink></li>
+            <ul v-if="item.childs && item.index === childOpen" class="pl-5 py-4">
+              <li v-for="child in item.childs" ><NuxtLink class="text-md font-light block py-2" :to="child.slug" >{{child.name}}</NuxtLink></li>
             </ul>
           </li>
 
@@ -35,16 +35,16 @@
         </div>
       </nav>
       </div>
-      <div class="menu container mx-auto mt-5 hidden sm:block">
+      <div class="menu desktop-nav container mx-auto mt-5 hidden sm:block">
         <ul class="flex justify-center">
         <li v-for="(item, index) in menuDesc" :key="index" class="relative">
-          <NuxtLink v-if="!item.childs" :to="item.slug" class="text-xl font-medium mr-2 lg:mr-10 cursor-pointer">{{item.name}}</NuxtLink>
-          <span v-else @click="(openChild === item.index)?openChild ='': openChild = item.index"  class="text-xl font-medium mr-2 lg:mr-10 cursor-pointer">
+          <NuxtLink v-if="!item.childs" :to="item.slug" class="text-lg font-medium mr-2 lg:mr-10 cursor-pointer uppercase">{{item.name}}</NuxtLink>
+          <span v-else @click="(childOpen === item.index)?childOpen ='': childOpen = item.index"  class="text-lg font-medium mr-2 uppercase lg:mr-10 cursor-pointer">
             {{item.name}}
-            <IconifyIcon style="display: inline" v-bind:class="{'open': openChild === item.index}" :icon="icons.arrowDown"  />
+            <IconifyIcon style="display: inline" v-bind:class="{'open': childOpen === item.index}" :icon="icons.arrowDown"  />
           </span>
-          <ul v-if="item.childs && item.index === openChild" class="bg-white shadow-md p-5 absolute top-1	">
-            <li v-for="child in item.childs"><NuxtLink class="text-xl block py-3 font-medium" :to="child.slug">{{child.name}}</NuxtLink></li>
+          <ul v-if="item.childs && item.index === childOpen" class="bg-white shadow-lg p-5 px-8 absolute top-1">
+            <li v-for="child in item.childs"><NuxtLink class="text-xl block py-3 font-medium whitespace-nowrap " :to="child.slug">{{child.name}}</NuxtLink></li>
           </ul>
         </li>
       </ul>
@@ -66,6 +66,7 @@ export default {
   },
   data() {
     return {
+      topScroll: false,
       icons: {
         menuIcon,
         closeOutline,
@@ -183,7 +184,12 @@ export default {
   methods: {
     openChild(item){
       (this.childOpen === item.index)?this.childOpen ='': this.childOpen = item.index
-    }
+    },
+  },
+  created(){
+    this.$nuxt.$on('topScroll', (top) => {
+      this.topScroll = top
+    })
   }
 }
 </script>
@@ -199,18 +205,28 @@ export default {
   .header{
     background-color: white;
     border-bottom: 1px solid $color-gray-20;
-    position: fixed;
     left: 0;
     right: 0;
     width: 100%;
     top: 0;
+
     .title{
-      font-size: 10px;
+      font-size: 11px;
+      line-height: 1.5;
+      @media (min-width: 640px) {
+        font-size: 18px;
+
+      }
     }
 
     .menu {
       .open {
         transform: rotate(180deg);
+      }
+    }
+    .desktop-nav {
+      .nuxt-link-active {
+        text-decoration: underline;
       }
     }
 

@@ -1,6 +1,6 @@
 <template>
   <div class="from-search">
-    <input type="search" class="rounded">
+    <input type="search" class="rounded" placeholder="Введите запрос">
     <IconifyIcon class="icon text-xl" :icon="icons.searchOutlined" />
   </div>
 </template>
@@ -36,6 +36,12 @@ export default {
       line-height: 1.5;
       width: 100%;
       padding-left: 35px;
+
+      &::placeholder{
+        color: $color-gray-60;
+        font-weight: 300;
+        font-size: $type-base;
+      }
     }
 
     .icon{
