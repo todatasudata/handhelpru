@@ -61,7 +61,7 @@ export default {
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    baseURL: process.env.SERVER_URL, // Used as fallback if no runtime config is provided
+    // baseURL: process.env.SERVER_URL, // Used as fallback if no runtime config is provided
     proxy: true // Can be also an object with default options
   },
   yandexMetrika: {
@@ -135,9 +135,9 @@ export default {
       },
     }
   },
-  // proxy: {
-  //   '/api/': process.env.SERVER_URL + '/api/v2/',
-  // },
+  proxy: {
+    '/api/': process.env.SERVER_URL,
+  },
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
   }
